@@ -11,6 +11,10 @@
 #include "Platform/Platform.hpp"
 using namespace mdr;
 
+#ifdef _WIN32
+extern bool g_micaSupported;
+#endif
+
 mdr::MDRHeadphones gDevice;
 String gBugcheckMessage;
 
@@ -494,7 +498,12 @@ void DrawDeviceDiscovery()
     static bool popup = false;
     if (!popup)
         ImGui::OpenPopup("DeviceDiscovery"), popup = true;
-    if (ImGui::BeginPopupModal("DeviceDiscovery", nullptr, kImWindowFlagsTopMost))
+    ImGuiWindowFlags discoveryFlags = kImWindowFlagsTopMost;
+#ifdef _WIN32
+    if (g_micaSupported)
+        discoveryFlags |= ImGuiWindowFlags_NoBackground;
+#endif
+    if (ImGui::BeginPopupModal("DeviceDiscovery", nullptr, discoveryFlags))
     {
         static MDRDeviceInfo* pDeviceInfo = nullptr;
         static int nDeviceInfo = 0;
@@ -557,7 +566,12 @@ void DrawDeviceConnecting()
         static bool popup = false;
         if (!popup)
             ImGui::OpenPopup("Connection"), popup = true;
-        if (ImGui::BeginPopupModal("Connection", nullptr, kImWindowFlagsTopMost))
+        ImGuiWindowFlags connectionFlags = kImWindowFlagsTopMost;
+#ifdef _WIN32
+        if (g_micaSupported)
+            connectionFlags |= ImGuiWindowFlags_NoBackground;
+#endif
+        if (ImGui::BeginPopupModal("Connection", nullptr, connectionFlags))
         {
             ImGui::NewLine();
             ImTextCentered("Connecting...");
@@ -1312,7 +1326,12 @@ void DrawDeviceDisconnect()
         ImGui::OpenPopup("Disconnected"), popup = true;
     ImSetNextWindowCentered();
 
-    if (ImGui::BeginPopupModal("Disconnected", nullptr, kImWindowFlagsTopMost))
+    ImGuiWindowFlags disconnectedFlags = kImWindowFlagsTopMost;
+#ifdef _WIN32
+    if (g_micaSupported)
+        disconnectedFlags |= ImGuiWindowFlags_NoBackground;
+#endif
+    if (ImGui::BeginPopupModal("Disconnected", nullptr, disconnectedFlags))
     {
         ImGui::NewLine();
         ImTextCentered("Device Disconnected");
@@ -1342,6 +1361,10 @@ void DrawApp()
     ImGui::SetNextWindowPos({0, 0});
     ImGui::SetNextWindowSize(io.DisplaySize);
     ImGuiWindowFlags flags = kImWindowFlagsTopMost;
+#ifdef _WIN32
+    if (g_micaSupported)
+        flags |= ImGuiWindowFlags_NoBackground;
+#endif
     switch (connState)
     {
     case CONN_STATE_CONNECTED:

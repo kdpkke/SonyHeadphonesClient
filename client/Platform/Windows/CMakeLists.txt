@@ -11,4 +11,6 @@ target_link_libraries(
         Client_PlatformWindows
         PUBLIC
         mdr
+        dwmapi
+        uxtheme
 )
